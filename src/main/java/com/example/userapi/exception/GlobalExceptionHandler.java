@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
@@ -35,7 +34,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateRequestException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateRequest(
             DuplicateRequestException ex,
-            HttpServletRequest request){
+            HttpServletRequest request) {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.CONFLICT.value())
@@ -51,7 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationErrors(
             MethodArgumentNotValidException ex,
-            HttpServletRequest request){
+            HttpServletRequest request) {
 
         BindingResult bindingResult = ex.getBindingResult();
 
@@ -98,7 +97,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles all other unhandled exceptions.
      * Returns 500 INTERNAL SERVER ERROR.
-     *
+     * <p>
      * IMPORTANT: In production, don't expose internal error details.
      * Log the full exception but return a generic message to the client.
      */

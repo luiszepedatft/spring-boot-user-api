@@ -4,7 +4,6 @@ import com.example.userapi.UserService;
 import com.example.userapi.dto.CreateUserRequest;
 import com.example.userapi.dto.UpdateUserRequest;
 import com.example.userapi.dto.UserDTO;
-import com.example.userapi.mapper.UserMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
