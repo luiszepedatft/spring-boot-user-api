@@ -1,6 +1,6 @@
 package com.example.userapi.controller;
 
-import com.example.userapi.UserService;
+import com.example.userapi.service.UserService;
 import com.example.userapi.dto.CreateUserRequest;
 import com.example.userapi.dto.UpdateUserRequest;
 import com.example.userapi.dto.UserDTO;

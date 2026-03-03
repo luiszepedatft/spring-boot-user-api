@@ -1,12 +1,13 @@
 package com.example.userapi.controller;
 
-import com.example.userapi.UserService;
+import com.example.userapi.service.UserService;
 import com.example.userapi.dto.CreateUserRequest;
 import com.example.userapi.dto.UpdateUserRequest;
 import com.example.userapi.dto.UserDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class UserController {
     /**
      * Create a new user
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     //@Operation(summary="Create a new User", description = "Creates a new user")
     //@ApiResponses
@@ -40,6 +42,7 @@ public class UserController {
     /**
      * Get all users
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
