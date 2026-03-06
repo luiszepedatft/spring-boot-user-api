@@ -3,9 +3,11 @@ package com.example.userapi.service;
 import com.example.userapi.dto.CreateUserRequest;
 import com.example.userapi.dto.UpdateUserRequest;
 import com.example.userapi.dto.UserDTO;
+import com.example.userapi.events.UserCreatedEvent;
 import com.example.userapi.mapper.UserMapper;
 import com.example.userapi.model.User;
 import com.example.userapi.repository.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +18,12 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher publisher;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, ApplicationEventPublisher publisher) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.publisher = publisher;
     }
 
     /**
@@ -43,10 +47,14 @@ public class UserService {
     /**
      * Create a new user
      */
+
+
     public UserDTO createUser(CreateUserRequest request) {
         User user = userMapper.toEntity(request);
         User savedUser = userRepository.save(user);
-        return userMapper.toDTO(savedUser);
+        UserDTO dto = userMapper.toDTO(savedUser);
+        publisher.publishEvent(new UserCreatedEvent(this, dto));
+        return dto;
     }
 
     /**
