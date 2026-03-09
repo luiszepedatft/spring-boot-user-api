@@ -5,8 +5,10 @@ import com.example.userapi.dto.UpdateUserRequest;
 import com.example.userapi.dto.UserDTO;
 import com.example.userapi.events.UserCreatedEvent;
 import com.example.userapi.mapper.UserMapper;
+import com.example.userapi.messages.UserCreatedMessage;
 import com.example.userapi.model.User;
 import com.example.userapi.repository.UserRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +21,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ApplicationEventPublisher publisher;
+    private final RabbitTemplate rabbitTemplate;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, ApplicationEventPublisher publisher) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, ApplicationEventPublisher publisher, RabbitTemplate rabbitTemplate) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.publisher = publisher;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -47,13 +51,17 @@ public class UserService {
     /**
      * Create a new user
      */
-
-
     public UserDTO createUser(CreateUserRequest request) {
         User user = userMapper.toEntity(request);
         User savedUser = userRepository.save(user);
         UserDTO dto = userMapper.toDTO(savedUser);
         publisher.publishEvent(new UserCreatedEvent(this, dto));
+        rabbitTemplate.convertAndSend(
+                "userCreated.exchange",
+                "userCreated.routing.key",
+                new UserCreatedMessage(dto.getUsername(), dto.getEmail())
+        );
+
         return dto;
     }
 
